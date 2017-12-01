@@ -1,42 +1,56 @@
 # -*- mode: ruby -*-
 # vi: set ft=ruby :
 
-# Variaveis
 VAGRANTFILE_API_VERSION = 2
+AVAILABLE_PLUGINS = ['landrush', 'hostmanager']
 
-# Chamando modulo YAML
 require 'yaml'
 
-# Lendo o arquivo YAML com as configuracoes do ambiente
-env = YAML.load_file('environment.yaml')
+env = YAML.load_file('env.yaml')
+global = env['global']
+machines = env['machines']
+prefix = global['network_prefix']
 
-# Limitando apenas a ultima versao estavel do Vagrant instalada
 Vagrant.require_version '>= 2.0.0'
 
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
-  # Iteracao com os servidores do ambiente
-  env.each do |env|
-    config.vm.define env['name'] do |srv|
-      srv.vm.box      = env['box']
-      srv.vm.hostname = env['hostname']
-      srv.vm.network 'private_network', ip: env['ipaddress']
-      if env['additional_interface'] == true
-        srv.vm.network 'private_network', ip: '1.0.0.100',
-          auto_config: false
+  if Vagrant.has_plugin?('hostmanager') && global['hostmanager']
+    config.hostmanager.enabled           = true
+    config.hostmanager.manage_host       = true
+    config.hostmanager.ignore_private_ip = false
+  end
+  if Vagrant.has_plugin?('landrush') && global['landrush']
+    config.landrush.enabled = true
+    config.landrush.tld = global['domain']
+    config.landrush.guest_redirect_dns = false
+  end
+
+  machines.each_with_index do |m, index|
+    config.vm.define m['hostname'] do |d|
+      if m['box']
+        d.vm.box = m['box']
+      else
+        d.vm.box = global['box']
       end
-      srv.vm.provider 'virtualbox' do |vb|
-        vb.name   = env['name']
-        vb.memory = env['memory']
-        vb.cpus   = env['cpus']
-        vb.linked_clone = true
+      d.vm.hostname = m['hostname']
+      d.vm.network 'private_network', ip: "#{prefix}.#{index + 10}"
+      d.vm.provider 'virtualbox' do |vb|
+        vb.name = m['hostname']
+        if m['memory'] && m['cpus']
+          vb.memory = m['memory']
+          vb.cpus   = m['cpus']
+        else
+          vb.memory = global['memory']
+          vb.cpus = global['cpus']
+        end
+        vb.linked_clone = true if global['linked_clone']
       end
-      if env['provision']
-        srv.vm.provision 'ansible_local' do |ansible|
-          ansible.playbook           = env['provision']
-          ansible.install_mode       = 'pip'
-          ansible.become             = true
-          ansible.become_user        = 'root'
-          ansible.compatibility_mode = '2.0'
+      if m['provision']['ansible']
+        d.vm.provision :ansible_local do |ansible|
+          ansible.playbook = m['ansible']['playbook']
+          ansible.become = true
+          ansible.become_user = 'root'
+          ansible.inventory_path = m['ansible']['inventory']
         end
       end
     end
