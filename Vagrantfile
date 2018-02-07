@@ -33,6 +33,8 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     config.landrush.tld = domain
   end
 
+  config.vm.synced_folder ".", "/vagrant", type: "nfs"
+  
   # Loop to provisioning all hosts in environment yaml file
   hosts.each_with_index do |hosts, index|
 
