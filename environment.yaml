@@ -10,16 +10,16 @@ global:
 hosts:
 
   - hostname: kub01
-    provision:
+    provision: true
       ansible:
         playbook: provision/ansible/master.yaml
 
   - hostname: kub02
-      provision:
+    provision:
       ansible:
         playbook: provision/ansible/node.yaml
 
   - hostname: kub03
-      provision:
+    provision:
       ansible:
         playbook: provision/ansible/node.yaml
