@@ -44,8 +44,6 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     provision = hostname['provision']
     ansible = hostname['ansible']
 
-   config.ssh.password = 'vagrant'
-
     # Settings of each host
     config.vm.define hostname do |define|
 
