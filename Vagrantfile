@@ -70,6 +70,8 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
           ansible.playbook = hosts['playbook']
           ansible.install_mode = :pip
           ansible.compatibility_mode = '2.0'
+          ansible.become = true
+          ansible.become_user = 'root'
         end
 
       end
