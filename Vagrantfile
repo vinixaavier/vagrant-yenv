@@ -41,12 +41,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     box = hosts['box']
     cpus = hosts['cpus']
     memory = hosts['memory']
-<<<<<<< HEAD
     provision = hosts['provision']
-=======
-    provision = hostname['provision']
-    ansible = hostname['ansible']
->>>>>>> 3f120b39eca7e21778f709eff31382392a052517
 
     # Settings of each host
     config.vm.define hostname do |define|
@@ -74,6 +69,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
         define.vm.provision :ansible_local do |ansible|
           ansible.playbook = hosts['playbook']
           ansible.install_mode = :pip
+          ansible.compatibility_mode = '2.0'
         end
 
       end
