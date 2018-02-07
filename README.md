@@ -32,8 +32,8 @@ hosts:
     memory: 512
     cpus: 1
     provision: true
-      ansible:
-        playbook: provision/ansible/infra.yaml
+    ansible:
+      playbook: provision/ansible/infra.yaml
 
   - hostname: infra02
     box: centos/7

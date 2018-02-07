@@ -42,6 +42,9 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     cpus = hosts['cpus']
     memory = hosts['memory']
     provision = hostname['provision']
+    ansible = hostname['ansible']
+
+   config.ssh.password = 'vagrant'
 
     # Settings of each host
     config.vm.define hostname do |define|
@@ -68,7 +71,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
       if provision
 
         define.vm.provision :ansible_local do |ansible|
-          ansible.playbook = provision['playbook']
+          ansible.playbook = ansible['playbook']
           ansible.become = true
           ansible.become_user = 'root'
         end

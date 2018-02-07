@@ -11,15 +11,15 @@ hosts:
 
   - hostname: kub01
     provision: true
-      ansible:
-        playbook: provision/ansible/master.yaml
+    ansible:
+      playbook: provision/ansible/master.yaml
 
   - hostname: kub02
-    provision:
-      ansible:
-        playbook: provision/ansible/node.yaml
+    provision: true
+    ansible:
+      playbook: provision/ansible/node.yaml
 
   - hostname: kub03
-    provision:
-      ansible:
-        playbook: provision/ansible/node.yaml
+    provision: true
+    ansible:
+      playbook: provision/ansible/node.yaml
