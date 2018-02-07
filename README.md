@@ -31,9 +31,8 @@ hosts:
     box: centos/7
     memory: 512
     cpus: 1
-    provision: true
-    ansible:
-      playbook: provision/ansible/infra.yaml
+    provision: ansible
+    playbook: provision/ansible/infra.yaml
 
   - hostname: infra02
     box: centos/7
@@ -87,8 +86,9 @@ The following directives is possible:
 - hostname: the name of machine in virtualbox;
 - box: the operating system how vagrant box to download;
 - memory: the size of memory RAM of machine;
-- cpus: the number of cores CPU; and
-- provision: the provisioner (only ansible for a while);
+- cpus: the number of cores CPU;
+- provision: the provisioner (only ansible for a while); and
+- playbook: if provisioner is ansible, specify the path of playbook;
 
 ## To do
 

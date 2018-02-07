@@ -1,3 +1,5 @@
+---
+
 global:
   linked_clone: true
   landrush: true
@@ -10,16 +12,15 @@ global:
 hosts:
 
   - hostname: kub01
-    provision: true
-    ansible:
-      playbook: provision/ansible/master.yaml
+    provision: ansible
+    playbook: provision/ansible/master.yaml
 
   - hostname: kub02
-    provision: true
-    ansible:
-      playbook: provision/ansible/node.yaml
+    provision: ansible
+    playbook: provision/ansible/node.yaml
 
   - hostname: kub03
-    provision: true
-    ansible:
-      playbook: provision/ansible/node.yaml
+    provision: ansible
+    playbook: provision/ansible/node.yaml
+
+...
