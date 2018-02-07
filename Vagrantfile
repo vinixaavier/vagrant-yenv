@@ -6,53 +6,77 @@ AVAILABLE_PLUGINS = ['landrush', 'hostmanager']
 
 require 'yaml'
 
-env = YAML.load_file('env.yaml')
-global = env['global']
-machines = env['machines']
-prefix = global['network_prefix']
+# Load environment yaml file
+environment = YAML.load_file('environment.yaml')
 
-Vagrant.require_version '>= 2.0.0'
+# Store all global settings in variables
+global_settings = environment['global']
+linked_clone = global_settings['linked_clone']
+landrush = global_settings['landrush']
+domain = global_settings['domain']
+network_prefix = global_settings['network_prefix']
+global_memory = global_settings['memory']
+global_cpus = global_settings['cpus']
+global_box = global_settings['box']
+
+# Store all hosts 
+hosts = environment['hosts']
+
+# Checking if latest release version of Vagrant
+Vagrant.require_version '>= 2.0.2'
 
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
-  if Vagrant.has_plugin?('hostmanager') && global['hostmanager']
-    config.hostmanager.enabled           = true
-    config.hostmanager.manage_host       = true
-    config.hostmanager.ignore_private_ip = false
-  end
-  if Vagrant.has_plugin?('landrush') && global['landrush']
+
+  # Activating landrush plugin if enabled
+  if Vagrant.has_plugin?('landrush') && landrush
     config.landrush.enabled = true
-    config.landrush.tld = global['domain']
-    config.landrush.guest_redirect_dns = false
+    config.landrush.tld = domain
   end
 
-  machines.each_with_index do |m, index|
-    config.vm.define m['hostname'] do |d|
-      if m['box']
-        d.vm.box = m['box']
-      else
-        d.vm.box = global['box']
+  # Loop to provisioning all hosts in environment yaml file
+  hosts.each_with_index do |hosts, index|
+
+    # Store all environment host settings in variables
+    hostname = hosts['hostname']
+    box = hosts['box']
+    cpus = hosts['cpus']
+    memory = hosts['memory']
+    provision = hostname['provision']
+
+    # Settings of each host
+    config.vm.define hostname do |define|
+
+      # Checking if is global settings or host settings
+      if box then define.vm.box = box else define.vm.box = global_box end
+
+      define.vm.hostname = "#{hostname}.#{domain}"
+      define.vm.network 'private_network', ip: "#{network_prefix}.#{index + 10}"
+
+      # Settings of each host in VirtualBox 
+      define.vm.provider 'virtualbox' do |virtualbox|
+
+        virtualbox.name = hostname
+
+        # Checking if is global settings or host settings
+        if cpus then virtualbox.cpus = cpus else virtualbox.cpus = global_cpus end
+        if memory then virtualbox.memory = memory else virtualbox.memory = global_memory end
+        if linked_clone then virtualbox.linked_clone = true end
+
       end
-      d.vm.hostname = m['hostname']
-      d.vm.network 'private_network', ip: "#{prefix}.#{index + 10}"
-      d.vm.provider 'virtualbox' do |vb|
-        vb.name = m['hostname']
-        if m['memory'] && m['cpus']
-          vb.memory = m['memory']
-          vb.cpus   = m['cpus']
-        else
-          vb.memory = global['memory']
-          vb.cpus = global['cpus']
-        end
-        vb.linked_clone = true if global['linked_clone']
-      end
-      if m['provision']['ansible']
-        d.vm.provision :ansible_local do |ansible|
-          ansible.playbook = m['ansible']['playbook']
+
+      # Checking if have provisioning tools
+      if provision
+
+        define.vm.provision :ansible_local do |ansible|
+          ansible.playbook = provision['playbook']
           ansible.become = true
           ansible.become_user = 'root'
-          ansible.inventory_path = m['ansible']['inventory']
         end
+
       end
-    end
+
+    end 
+
   end
+
 end

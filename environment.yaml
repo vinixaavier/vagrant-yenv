@@ -1,0 +1,25 @@
+global:
+  linked_clone: true
+  landrush: true
+  domain: lab.com.br
+  network_prefix: 192.168.200
+  memory: 1024
+  cpus: 1
+  box: centos/7
+
+hosts:
+
+  - hostname: kub01
+    provision:
+      ansible:
+        playbook: provision/ansible/master.yaml
+
+  - hostname: kub02
+      provision:
+      ansible:
+        playbook: provision/ansible/node.yaml
+
+  - hostname: kub03
+      provision:
+      ansible:
+        playbook: provision/ansible/node.yaml
