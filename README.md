@@ -2,11 +2,12 @@
 
 Simple translation of Vagrantfile into YAML configuration file.
 The goal is to set up the environment with VirtualBox and Vagrant, quickly and easily using the YAML markup facility.
+Ansible and Puppet provision is possible.
 
 ## Quick start
 
-1. Ensure VirtualBox and Vagrant is installed;
-2. Ensure that the Vagrant plugin Landrush installed;
+1. Ensure latest version of the VirtualBox and Vagrant is installed;
+2. Ensure that the Vagrant plugins installed: vbguest, hosts, landrush, puppet-install, r10k;
 3. Clone this repository;
 4. Edit the environment.yaml with machines you need; and
 5. Run 'vagrant up' to up all machines of the environment;
@@ -38,6 +39,8 @@ hosts:
     box: centos/7
     memory: 512
     cpus: 1
+    provision: puppet
+    environment: development
 
   - hostname: master01
     box: centos/7
@@ -87,9 +90,14 @@ The following directives is possible:
 - box: the operating system how vagrant box to download;
 - memory: the size of memory RAM of machine;
 - cpus: the number of cores CPU;
-- provision: the provisioner (only ansible for a while); and
-- playbook: if provisioner is ansible, specify the path of playbook;
+- provision: the provisioner Puppet or Ansible;
+
+If provision is **Ansible**, the following settings be necessary:
+- playbook: specify the path of playbook;
+
+If provision is **Puppet**, the following settings be necessary:
+- environment: specify the name of the Puppet environment;
 
 ## To do
 
-- Provision with Puppet and Shell;
+- Provision with Shell;

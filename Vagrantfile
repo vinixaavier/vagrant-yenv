@@ -2,7 +2,6 @@
 # vi: set ft=ruby :
 
 VAGRANTFILE_API_VERSION = 2
-AVAILABLE_PLUGINS = ['landrush', 'hostmanager']
 
 require 'yaml'
 
@@ -19,11 +18,11 @@ global_memory = global_settings['memory']
 global_cpus = global_settings['cpus']
 global_box = global_settings['box']
 
-# Store all hosts 
+# Store all hosts and which provision be used
 hosts = environment['hosts']
 
 # Checking if latest release version of Vagrant
-Vagrant.require_version '>= 2.0.2'
+Vagrant.require_version '>= 2.0.3'
 
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
@@ -32,9 +31,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     config.landrush.enabled = true
     config.landrush.tld = domain
   end
-
-  config.vm.synced_folder ".", "/vagrant", type: "nfs"
-  
+ 
   # Loop to provisioning all hosts in environment yaml file
   hosts.each_with_index do |hosts, index|
 
@@ -75,7 +72,20 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
           ansible.become = true
           ansible.become_user = 'root'
         end
+      end
 
+      if provision == 'puppet'
+        puppet_environment = hosts['environment']
+        define.r10k.puppet_dir = "provision/puppet/environments/#{puppet_environment}"
+        define.r10k.puppetfile_path = "provision/puppet/environments/#{puppet_environment}/Puppetfile"
+        define.r10k.module_path = "provision/puppet/environments/#{puppet_environment}/modules"
+        define.puppet_install.puppet_version = :latest
+        define.vm.provision 'puppet' do |puppet|
+          puppet.manifests_path = "provision/puppet/environments/#{puppet_environment}/manifests"
+          puppet.manifest_file = 'site.pp'
+          puppet.environment = puppet_environment
+          puppet.module_path = "provision/puppet/environments/#{puppet_environment}/modules"
+        end
       end
 
     end 

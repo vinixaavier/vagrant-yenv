@@ -11,16 +11,12 @@ global:
 
 hosts:
 
-  - hostname: kub01
-    provision: ansible
-    playbook: provision/ansible/master.yaml
+  - hostname: mysql-master
+    provision: puppet
+    environment: development
 
-  - hostname: kub02
-    provision: ansible
-    playbook: provision/ansible/node.yaml
-
-  - hostname: kub03
-    provision: ansible
-    playbook: provision/ansible/node.yaml
+  - hostname: mysql-slave
+    provision: puppet
+    environment: development
 
 ...
