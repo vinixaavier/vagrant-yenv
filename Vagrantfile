@@ -84,7 +84,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
           puppet.manifests_path = "provision/puppet/environments/#{puppet_environment}/manifests"
           puppet.manifest_file = 'site.pp'
           puppet.environment = puppet_environment
-          puppet.module_path = "provision/puppet/environments/#{puppet_environment}/modules"
+          puppet.module_path = ["provision/puppet/modules", "provision/puppet/environments/#{puppet_environment}/modules", "provision/puppet/environments/#{puppet_environment}/site"]
         end
       end
 
