@@ -44,13 +44,13 @@ hosts:
 
   - hostname: master01
     box: centos/7
-    hostname: master01.4linux.com.br
+    hostname: master01.lab.com.br
     memory: 1024
     cpus: 1
 
   - hostname: master02
     box: centos/7
-    hostname: master02.4linux.com.br
+    hostname: master02.lab.com.br
     memory: 1024
     cpus: 1
 
