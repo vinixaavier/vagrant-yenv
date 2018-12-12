@@ -7,7 +7,7 @@ Ansible and Puppet provision is possible.
 ## Quick start
 
 1. Ensure latest version of the VirtualBox and Vagrant is installed;
-2. Ensure that the Vagrant plugins installed: vbguest, hosts, landrush, puppet-install, r10k;
+2. Ensure that the Vagrant plugins installed: vagrant-vbguest, vagrant-hostmanager, landrush, vagrant-puppet-install, vagrant-r10k;
 3. Clone this repository;
 4. Edit the environment.yaml with machines you need; and
 5. Run 'vagrant up' to up all machines of the environment;

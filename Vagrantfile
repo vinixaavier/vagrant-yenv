@@ -31,6 +31,13 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     config.landrush.enabled = true
     config.landrush.tld = domain
   end
+
+  # Activating hostmanager plugin if enabled
+  if Vagrant.has_plugin?('vagrant-hostmanager') && landrush
+    config.hostmanager.enabled = true
+    config.hostmanager.manage_host = true
+    config.hostmanager.ignore_private_ip = false
+  end
  
   # Loop to provisioning all hosts in environment yaml file
   hosts.each_with_index do |hosts, index|
